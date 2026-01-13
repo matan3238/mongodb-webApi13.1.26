@@ -1,62 +1,58 @@
-// const mongoose=require('mongoose');//קישור לספריית מונגוס
-const products=require('../models/products');
-//חיבור לבסיס נתונים מסוג mysql
-var mysql = require('mysql2');
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'matan',
-    password: 'Matan323@',
-    database: 'ecommdb'
+const mongoose=require('mongoose');
+const Product=require('../models/products');
 
-});
-connection.connect((err) => {
-    if (err == null)
-        console.log('Good My Sql Connection');
-    else
-        console.log(err);
-});
+const obj={
+getALLProduct:(req,res)=>{
+   Product.find().then((data)=>{
+      return res.status(200).json(data);
+   })
+    },
 
-let obj={
-    getAllProducts:(req,res)=>{
-        let sql="select * from t_product";
-        connection.promise().query(sql).then((results)=>{
-        return res.status(200).json(results[0]);
-        // מבצעים חיפוש של כל המוצרים בטבלת מוצרים ומדפיסים אותם
-        });
-},
-getProductById:(req,res)=>{
-   const id=req.params.id;//שמירת הפרמטר איידי שנשלח לנקודת קצהבתוך משתנה איידי
-let sql=`select * from t_product where pid=${id}`;
-   connection.promise().query(sql).then((results)=>{
-
-   return res.status(200).json(results[0]);
-   });
-},
-updateProductById:(req,res)=>{
-const id=req.params.id;//שמירת הפרמטר איידי שנשלח לנקודת הקצה בתוך משתנה בשם איידי
-const prod=req.body;//שמירת הבודי בתוך משתנה בשם פרוד
-let sql=`delete t_product set pname='${prod.pname}',price=${prod.price}where pid=${id}`;
-connection.promise().query(sql).then((results)=>{
-  return res.status(200).json(results[0]);
-});
-},
-deleteProductById:(req,res)=>{
-   const pid=req.params.id;
-      let sql=`delete from t_products where pid=${id}`;
-      connection.promise().query(sql).then((results)=>{
-   return res.status(200).json(results[0]);
+    addNewProduct: (req, res) => {
+  const pid = req.body.pid;
+//לפני הוספת מוצר חדש נבדוק האם קיים מוצר אם אותו קוד מוצר
+  Product.find({ pid: pid }).then((data) => {
+    if (data.length > 0) {
+      return res
+        .status(200)
+        .json({ message: `product id ${pid} already exist` });
+    } else {
+      Product.insertOne(req.body).then((prod) => {
+        return res.status(200).json(prod);
       });
+    }
+  });
 },
-addNewProduct:(req,res)=>{
-// const id=req.params.id;//שמירת הפרמטר איידי שנשלח לנקודת הקצה בתוך משתנה בשם איידי
-const prod=req.body;//שמירת הבודי בתוך משתנה בשם פרוד
-// let sql=`insert into t_product(pname,price,pdesc,picname)values(;
-// sql+=`'${prod.name}',${prod.price},${prod.pdesc},${prod.picname}`;
-        let sql=`insert into t_product (pname,price,pdesc,picname) VALUES ('${prod.pname}',${prod.price},'${prod.pdesc}','${prod.picname}')`;
-connection.promise().query(sql).then((results)=>{
-  return res.status(200).json(results[0]);
-            });
-        }  
-};
-module.exports=obj;
 
+    addProductById:  (req,res)=>{
+       const pid=req.params.id;
+      Product.insertOne(req.body).then((prod)=>{
+         return res.status(200).json(prod);
+      });
+    },    
+    updateProductById:(req,res)=>{
+      const pid=req.params.id;
+      Product.updateOne({pid},req.body).then((prod)=>{
+         return res.status(200).json(prod);
+      });
+        
+   },
+
+//חדש
+deleteProductById:(req,res)=>{
+      const pid=req.params.id;
+      Product.deleteOne({pid}).then((prod)=>{
+         return res.status(200).json(prod);
+      })
+    } ,
+
+    //חדש קוד 
+    getproductbyid: (req,res)=>{
+      const id=req.params.id;
+      Product.find({pid:id}).then((prod)=>{
+         return res.status(200).json(prod);
+      })
+     
+    } ,
+}
+module.exports=obj
