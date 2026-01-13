@@ -3,5 +3,5 @@ const app=require('./app');// ייבוא האפליקציה שיצרנו בקו�
 const port=5050;
 const srv=http.createServer(app);
 srv.listen(port,()=>{
-    console.log(`Server is listening on port ${port}...`);
+    console.log(`Server Up ${port}...`);
 });

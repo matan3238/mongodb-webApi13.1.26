@@ -5,7 +5,7 @@ const {getAllProducts,
     getProductById,
     updateProductById,
     deleteProductById
-}=require('../controllers/product');// ייבוא ישיר של הפונקציות מהקונטרולר
+}=require('../controllers/products');// ייבוא ישיר של הפונקציות מהקונטרולר
 const router=express.Router();// יצירת ראוטר חדש לניהול ניתובים
 //נגדיר ניתובים עבור היישות מוצר
 router.get('/',getAllProducts);// טיפול בבקשות GET לנתיב /product שליפת כל המוצרים
